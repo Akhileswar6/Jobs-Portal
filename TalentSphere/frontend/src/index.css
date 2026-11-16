@@ -5,11 +5,37 @@
 @tailwind utilities;
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    font-family: 'Google Sans Flex', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
   html, body {
     font-family: 'Google Sans Flex', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     @apply bg-slate-50 text-slate-900 antialiased;
     min-height: 100vh;
   }
+}
+
+/* Ensure all popups, modals, dialogs, dropdowns, and toast notifications render in Google Sans Flex */
+[data-sonner-toaster],
+[data-sonner-toaster] *,
+[data-sonner-toast],
+[data-sonner-toast] *,
+[role="dialog"],
+[role="dialog"] *,
+[role="alertdialog"],
+[role="alertdialog"] *,
+[role="menu"],
+[role="menu"] *,
+[role="tooltip"],
+[role="tooltip"] *,
+.modal,
+.modal *,
+dialog,
+dialog * {
+  font-family: 'Google Sans Flex', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 
 /* Custom scrollbars */
