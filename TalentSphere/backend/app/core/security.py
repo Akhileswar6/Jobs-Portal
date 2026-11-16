@@ -1,0 +1,82 @@
+from datetime import datetime, timedelta, timezone
+from typing import Any, Optional, Union
+import jwt
+from app.core.config import settings
+
+# Password Hashing Setup
+_argon2_hasher = None
+try:
+    from argon2 import PasswordHasher
+    from argon2.exceptions import VerifyMismatchError
+    _argon2_hasher = PasswordHasher()
+except Exception:
+    _argon2_hasher = None
+
+# Fallback hasher using passlib pbkdf2_sha256/bcrypt
+from passlib.context import CryptContext
+_fallback_context = CryptContext(schemes=["pbkdf2_sha256", "bcrypt"], deprecated="auto")
+
+
+def hash_password(password: str) -> str:
+    """Hash a password using Argon2 or PBKDF2 fallback."""
+    if _argon2_hasher is not None:
+        try:
+            return f"argon2${_argon2_hasher.hash(password)}"
+        except Exception:
+            pass
+    return _fallback_context.hash(password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a plain password against stored hash."""
+    if hashed_password.startswith("argon2$"):
+        if _argon2_hasher is not None:
+            raw_hash = hashed_password[len("argon2$"):]
+            try:
+                return _argon2_hasher.verify(raw_hash, plain_password)
+            except Exception:
+                return False
+        return False
+    try:
+        return _fallback_context.verify(plain_password, hashed_password)
+    except Exception:
+        return False
+
+
+def create_access_token(subject: Union[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    
+    to_encode = {
+        "exp": expire,
+        "sub": str(subject),
+        "type": "access",
+    }
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
+
+
+def create_refresh_token(subject: Union[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    
+    to_encode = {
+        "exp": expire,
+        "sub": str(subject),
+        "type": "refresh",
+    }
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
+
+
+def decode_token(token: str) -> Optional[dict]:
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        return payload
+    except jwt.PyJWTError:
+        return None
+
