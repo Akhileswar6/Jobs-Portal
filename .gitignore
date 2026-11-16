@@ -38,10 +38,13 @@ pnpm-debug.log*
 dist/
 dist-ssr/
 *.local
+.vite/
 
 # Uploads & Temp
 TalentSphere/backend/uploads/*
 !TalentSphere/backend/uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
 
 # IDEs
 .idea/
