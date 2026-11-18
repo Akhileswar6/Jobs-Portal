@@ -65,6 +65,14 @@ export const candidateApi = {
     const res = await apiClient.put('/candidate/profile', data);
     return res.data;
   },
+  uploadPhoto: async (file: File): Promise<{ profile_image: string; message: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await apiClient.post('/candidate/photo/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data;
+  },
   uploadResume: async (file: File): Promise<{ filename: string; parsed_data: ParsedResumeData; message: string }> => {
     const formData = new FormData();
     formData.append('file', file);
@@ -98,6 +106,14 @@ export const recruiterApi = {
   },
   updateProfile: async (data: Partial<User>): Promise<User> => {
     const res = await apiClient.put('/recruiter/profile', data);
+    return res.data;
+  },
+  uploadLogo: async (file: File): Promise<{ company_logo: string; message: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await apiClient.post('/recruiter/logo/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return res.data;
   },
   getDashboardAnalytics: async (): Promise<RecruiterDashboardData> => {
@@ -183,6 +199,14 @@ export const notificationsApi = {
 export const resumeApi = {
   getDownloadUrl: (candidateId: string) => {
     return `${apiClient.defaults.baseURL}/resume/download/${candidateId}`;
+  },
+  downloadMyResume: async (): Promise<Blob> => {
+    const res = await apiClient.get('/resume/my-resume', { responseType: 'blob' });
+    return res.data;
+  },
+  downloadCandidateResume: async (candidateId: string): Promise<Blob> => {
+    const res = await apiClient.get(`/resume/download/${candidateId}`, { responseType: 'blob' });
+    return res.data;
   },
 };
 

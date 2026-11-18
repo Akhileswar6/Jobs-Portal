@@ -17,6 +17,8 @@ export interface ExperienceItem {
   end_date?: string;
   is_current?: boolean;
   description?: string;
+  responsibilities?: string[];
+  bullet_points?: string[];
 }
 
 export interface ProjectItem {
@@ -58,12 +60,25 @@ export interface User {
   company_name?: string;
   company_website?: string;
   company_description?: string;
+  company_logo?: string;
+  company_email?: string;
+  industry?: string;
+  company_linkedin_url?: string;
+  company_type?: string;
+  designation?: string;
+  department?: string;
   // Candidate fields
   skills: string[];
   experience_years: number;
   education: EducationItem[];
   resume_path?: string;
   resume_parsed_data?: ParsedResumeData;
+  date_of_birth?: string;
+  gender?: string;
+  preferred_locations?: string[];
+  linkedin_url?: string;
+  github_url?: string;
+  portfolio_url?: string;
   created_at: string;
   updated_at: string;
 }
