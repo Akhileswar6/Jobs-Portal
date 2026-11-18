@@ -1,140 +1,155 @@
-# TalentSphere – AI-Powered ATS & Job Board
+# Jobs Portal – ATS & Recruitment Platform
 
-TalentSphere is an enterprise-grade Applicant Tracking System (ATS) and Job Board platform engineered with **React 18**, **TypeScript**, **FastAPI**, **PostgreSQL**, **SQLAlchemy 2.0**, and **Google Gemini AI**.
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-18.3+-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4+-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Vite](https://img.shields.io/badge/Vite-8.3+-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)
+
+Jobs Portal is a production-ready Applicant Tracking System (ATS) and intelligent job platform that bridges the gap between ambitious engineering talent and modern hiring teams. Featuring mathematical, deterministic ATS candidate scoring, automated resume extraction, multi-stage applicant screening pipelines, and personalized career roadmaps.
 
 ---
 
-## 🌟 Key Features
+## 📑 Table of Contents
 
-### 1. Deterministic ATS Matching Engine
-- **Formula:** `Final Score = (Skill Score × 0.60) + (Experience Score × 0.20) + (Relevance Score × 0.20)`
-- Normalized scale between **0% and 100%**.
-- Mathematical Python calculation (prevents arbitrary or halluncinated LLM scoring).
-- Automated skill synonym normalization (e.g., `ReactJS` → `React`, `NodeJS` → `Node.js`).
+- [Key Capabilities](#-key-capabilities)
+- [Deterministic ATS Matching Formula](#-deterministic-ats-matching-formula)
+- [System Architecture](#-system-architecture)
+- [Technology Stack](#-technology-stack)
+- [Local Installation & Setup](#-local-installation--setup)
 
-### 2. Google Gemini AI Integration
-- **Resume Parser:** Extracts contact details, technical skills, education, and career experience from PDF, DOCX, and TXT files.
-- **Career Roadmap Generator:** Generates 8–12 phase learning curriculums with practical portfolio project briefs and skill gap analyses.
-- **Job Description Analyzer:** Automatically extracts required skills, preferred qualifications, and core responsibilities from unstructured recruiter drafts.
+---
 
-### 3. Recruiter Management Console
-- Interactive analytics dashboard powered by **Recharts**:
-  - Live Hiring Funnel visualization.
-  - Top in-demand tech skills distribution.
-  - Total postings, active jobs, screening yield, and upcoming interviews.
-- Job postings management with full CRUD capabilities.
-- ATS-ranked applicant screening with matched/missing skill badges.
-- Interview scheduler with automated candidate in-app notifications.
+## 🌟 Key Capabilities
 
-### 4. Candidate Experience Portal
-- Multi-faceted job discovery with live filtering (Remote/Hybrid/On-site, Job Type, Salary, Experience).
-- Real-time ATS match preview before applying.
-- Interactive AI Career Roadmap generator with visual milestone timeline.
-- Complete application tracking and notification inbox.
+### 1. Dual-Role Experience Portals
+- **Candidate Portal**:
+  - **Comprehensive Profile Builder**: Structured personal details, contact preferences, LinkedIn/GitHub links, and education.
+  - **Resume Analyzer**: Instant extraction of technical skills taxonomy, summary, and bulleted work history from PDF and DOCX files.
+  - **In-App Document Viewer**: Clean, modal-based PDF previewer with direct download and replace actions.
+  - **Job Discovery & Matching**: Real-time 60/20/20 ATS match score preview across active job listings before applying.
+  - **Milestone Upskilling Roadmap**: Interactive 8–12 phase technical growth roadmap tailored to bridge candidate skill gaps.
+  - **Application Tracker**: Live application status lifecycle (`pending`, `reviewed`, `shortlisted`, `interview`, `accepted`, `rejected`).
+
+- **Recruiter Portal**:
+  - **Executive Analytics Dashboard**: Real-time hiring funnel, in-demand technical skill distribution charts (powered by Recharts), and interview pipelines.
+  - **Company Profile Management**: Company branding, logo uploader with live preview, website, industry, description, designation, and department details.
+  - **Job Management**: Multi-parameter job posting with custom skill criteria, experience thresholds, salary ranges, and remote/hybrid modes.
+  - **Applicant Screening Leaderboard**: Automatically ranked candidate lists based on mathematical ATS compatibility with individual resume inspection drawers and status updates.
+  - **Interview Workflow**: Direct technical interview scheduling with meeting links and candidate notifications.
+
+---
+
+## 📐 Deterministic ATS Matching Formula
+
+To ensure fair, explainable, and hallucination-free candidate evaluations, Jobs Portal computes applicant match scores mathematically in Python:
+
+$$\text{Final ATS Score} = (0.60 \times \text{Skill Alignment}) + (0.20 \times \text{Experience Fit}) + (0.20 \times \text{Keyword Relevance})$$
+
+| Component | Weight | Implementation Details |
+|---|:---:|---|
+| **Skill Alignment** | **60%** | Normalized taxonomy mapping (e.g., `ReactJS` → `React`, `NodeJS` → `Node.js`) evaluated against required and preferred job competencies. |
+| **Experience Fit** | **20%** | Proportional score comparing verified candidate industry years against minimum required job thresholds. |
+| **Keyword Relevance** | **20%** | Semantic domain vocabulary overlap across technical descriptions, responsibilities, and previous project contributions. |
 
 ---
 
 ## 🏗️ System Architecture
 
 ```
-React 18 + Vite (TypeScript + Tailwind CSS)
-      │
-      │ Axios + JWT Bearer Tokens
-      ▼
-FastAPI Backend (Python 3.11+)
-      │
-      ├── PostgreSQL Database (Port 5433 / 5432)
-      ├── SQLAlchemy 2.0 ORM + Alembic Migrations
-      ├── Google Gemini AI (Official GenAI SDK)
-      ├── Deterministic ATS Matching Algorithm (matcher.py)
-      └── Local File Storage (uploads/)
+                    ┌──────────────────────────────────────────────┐
+                    │  React 18 + Vite Frontend Client             │
+                    │  (TypeScript, Tailwind CSS, Lucide, Sonner)  │
+                    └──────────────────────┬───────────────────────┘
+                                           │
+                                           │ HTTPS / Axios + JWT Bearer
+                                           ▼
+                    ┌──────────────────────────────────────────────┐
+                    │  FastAPI Backend Microservices (Port 8000)   │
+                    │  ├── Auth & Role-Based Access Control (RBAC) │
+                    │  ├── Deterministic ATS Matcher Engine        │
+                    │  ├── Resume Parsing Pipeline                 │
+                    │  └── Interview & Notification Services       │
+                    └──────────────────────┬───────────────────────┘
+                                           │
+                        ┌──────────────────┴──────────────────┐
+                        ▼                                     ▼
+     ┌───────────────────────────────────┐ ┌───────────────────────────────────┐
+     │ MySQL 8.0 Relational Database     │ │ Local Document Repository         │
+     │ (Port 3306 - jobs_portal)         │ │ (backend/uploads/)                │
+     │ - users, jobs, applications       │ │ - Resumes (PDF, DOCX, TXT)        │
+     │ - career_roadmaps, interviews     │ │ - Recruiter Company Logos         │
+     └───────────────────────────────────┘ └───────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Quick Local Setup
+## 💻 Technology Stack
+
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite 8.3
+- **Styling**: Tailwind CSS, Google Sans Flex typography
+- **Routing**: React Router DOM v6
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **Data Visualization**: Recharts
+- **HTTP Client**: Axios with JWT request/response interceptors
+- **Notifications**: Sonner
+
+### Backend
+- **Framework**: FastAPI (Python 3.11+)
+- **ASGI Server**: Uvicorn
+- **ORM**: SQLAlchemy 2.0 (with universal dialect-agnostic `Uuid` support)
+- **Database Driver**: PyMySQL + Cryptography
+- **Database**: MySQL 8.0 (Dual-compatible with PostgreSQL)
+- **Security**: Argon2 password hashing, PyJWT bearer token authentication
+- **Document Processing**: `pdfplumber`, `pypdf`, `python-docx`
+- **Validation**: Pydantic v2 & Pydantic-Settings
+
+---
+
+## 🚀 Local Installation & Setup
 
 ### Prerequisites
-- Python 3.11+
-- Node.js 18+ & npm
-- PostgreSQL running locally
+- **Python 3.11+** installed
+- **Node.js 18+** & npm installed
+- **MySQL Server 8.0** active on `localhost:3306`
 
-### 1. Database Setup
-Ensure PostgreSQL is active. Create the database:
+### 1. Database Configuration
+Ensure MySQL Server is running, then create the database:
 ```sql
-CREATE DATABASE talentsphere;
+CREATE DATABASE IF NOT EXISTS jobs_portal;
 ```
 
 ### 2. Backend Setup
 ```bash
-cd TalentSphere/backend
+# Navigate to the backend directory
+cd backend
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Run Alembic migrations
-python -m alembic upgrade head
-
-# Seed initial demo data (Recruiter, Candidate, 4 Jobs, Applications)
+# Run database seeder (initializes tables & seeds sample data)
 python seed.py
 
 # Start the FastAPI server
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-API Documentation will be live at: **http://127.0.0.1:8000/docs**
+Interactive Swagger API docs will be live at: **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)**
 
 ### 3. Frontend Setup
 ```bash
-cd TalentSphere/frontend
+# Navigate to the frontend directory
+cd frontend
 
-# Install dependencies
+# Install npm dependencies
 npm install
 
 # Start Vite development server
 npm run dev
 ```
-Frontend will be live at: **http://127.0.0.1:5173**
+The web application will be live at: **[http://127.0.0.1:5173](http://127.0.0.1:5173)**
 
----
-
-## 🔑 Demo Credentials
-
-| Role | Email | Password |
-|---|---|---|
-| **Recruiter** | `recruiter@talentsphere.io` | `Password123!` |
-| **Candidate** | `candidate@talentsphere.io` | `Password123!` |
-
-*Instant 1-Click login buttons are also available on the Login page.*
-
----
-
-## 📁 Repository Structure
-
-```
-TalentSphere/
-│
-├── backend/
-│   ├── app/
-│   │   ├── api/v1/          # Modular API endpoints
-│   │   ├── core/            # Config, Database, Security, Dependencies
-│   │   ├── models/          # SQLAlchemy 2.0 Relational Models
-│   │   ├── schemas/         # Pydantic v2 validation schemas
-│   │   ├── services/        # Gemini AI, ATS Matcher, Resume Parser
-│   │   └── utils/           # File validator, Skill normalizer
-│   ├── alembic/             # Database migration versions
-│   ├── uploads/             # Local resume file repository
-│   ├── seed.py              # Initial dataset seeder
-│   └── requirements.txt
-│
-├── frontend/
-│   ├── src/
-│   │   ├── api/             # Axios client with JWT interceptors
-│   │   ├── components/      # Common badges, modals, skeletons
-│   │   ├── context/         # AuthContext
-│   │   ├── layouts/         # CandidateLayout & RecruiterLayout
-│   │   ├── pages/           # Candidate, Recruiter & Common pages
-│   │   └── services/        # API service methods
-│   └── package.json
-└── README.md
-```
 
