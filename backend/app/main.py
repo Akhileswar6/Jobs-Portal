@@ -17,7 +17,7 @@ from app.api.v1.ai import router as ai_router
 # Initialize FastAPI App
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="TalentSphere AI-Powered Applicant Tracking System (ATS) & Job Board API",
+    description="Jobs Portal Applicant Tracking System (ATS) & Recruitment API",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -59,7 +59,7 @@ app.include_router(ai_router, prefix=settings.API_V1_STR)
 @app.get("/")
 def root():
     return {
-        "app": "TalentSphere API",
+        "app": "Jobs Portal API",
         "version": "1.0.0",
         "status": "online",
         "docs": "/docs",

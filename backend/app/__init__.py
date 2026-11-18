@@ -1,2 +1,2 @@
-# TalentSphere Backend Application Package
+# Jobs Portal Backend Application Package
 

@@ -21,7 +21,7 @@ def seed():
             print("Database already contains seed data. Skipping.")
             return
 
-        print("Seeding TalentSphere database...")
+        print("Seeding Jobs Portal database...")
 
         # 1. Create Recruiter
         recruiter = User(
@@ -229,7 +229,7 @@ def seed():
         # 5. Create Welcome Notification
         notif = Notification(
             user_id=candidate.id,
-            title="Welcome to TalentSphere!",
+            title="Welcome to Jobs Portal!",
             message="Your profile is set up. Explore personalized job recommendations or generate your AI Career Roadmap.",
             notification_type="system",
         )
