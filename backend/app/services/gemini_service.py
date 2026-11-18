@@ -35,6 +35,24 @@ def _clean_json_response(raw_text: str) -> str:
     return raw_text
 
 
+def extract_bullet_points(description: str) -> List[str]:
+    """Split free-form description or resume experience text into clean bullet points."""
+    if not description:
+        return []
+    # Split by newlines or common bullet symbols
+    raw_lines = re.split(r'[\r\n]+|[•\u2022\u2023\u25E6\u2043\u2219]+', description)
+    bullets = []
+    for line in raw_lines:
+        cleaned = line.strip().lstrip('-*• \t').strip()
+        if cleaned:
+            bullets.append(cleaned)
+    if not bullets and description.strip():
+        # Fallback to sentence splitting if a single contiguous paragraph
+        sentences = [s.strip().lstrip('-*• \t').strip() for s in re.split(r'(?<=[.!?])\s+', description) if s.strip()]
+        return sentences or [description.strip()]
+    return bullets
+
+
 def parse_resume_with_gemini(resume_text: str) -> Dict[str, Any]:
     """Parse raw resume text using Gemini AI into structured JSON."""
     client = get_genai_client()
@@ -42,6 +60,9 @@ def parse_resume_with_gemini(resume_text: str) -> Dict[str, Any]:
         prompt = f"""
 You are an expert ATS (Applicant Tracking System) resume parser.
 Extract structured information from the following resume text and respond ONLY with valid JSON.
+CRITICAL INSTRUCTION FOR WORK EXPERIENCE:
+Extract each duty, project milestone, and achievement strictly as individual bullet points in the "responsibilities" array.
+Do NOT lump all details into a single paragraph. Every bullet point from the resume must be its own string item in "responsibilities".
 Do not include any conversational text or markdown formatting outside the JSON block.
 
 Schema:
@@ -70,7 +91,12 @@ Schema:
       "start_date": "Jan 2022",
       "end_date": "Present",
       "is_current": true,
-      "description": "Responsibilities and achievements"
+      "description": "Short summary or full text",
+      "responsibilities": [
+        "First bullet point responsibility or achievement",
+        "Second bullet point responsibility or achievement",
+        "Third bullet point responsibility or achievement"
+      ]
     }}
   ],
   "projects": [
@@ -105,12 +131,20 @@ Resume text:
                 )
             )
             cleaned = _clean_json_response(response.text)
-            return json.loads(cleaned)
+            parsed = json.loads(cleaned)
+            for exp in parsed.get("work_experience", []):
+                if not exp.get("responsibilities"):
+                    exp["responsibilities"] = extract_bullet_points(exp.get("description", ""))
+            return parsed
         except Exception as e:
             logger.error(f"Gemini API error during resume parsing: {e}")
 
     # Robust heuristic fallback parser when API key is not configured or fails
-    return _heuristic_resume_parser(resume_text)
+    fallback_parsed = _heuristic_resume_parser(resume_text)
+    for exp in fallback_parsed.get("work_experience", []):
+        if not exp.get("responsibilities"):
+            exp["responsibilities"] = extract_bullet_points(exp.get("description", ""))
+    return fallback_parsed
 
 
 def _heuristic_resume_parser(text: str) -> Dict[str, Any]:
@@ -169,7 +203,12 @@ def _heuristic_resume_parser(text: str) -> Dict[str, Any]:
                 "start_date": "2024",
                 "end_date": "Present",
                 "is_current": True,
-                "description": "Developed full-stack web applications and microservices."
+                "description": "Developed full-stack web applications and microservices.",
+                "responsibilities": [
+                    "Developed high-performance full-stack web applications and microservices using modern backend architectures.",
+                    "Designed RESTful APIs and optimized database queries for responsive performance.",
+                    "Collaborated in Agile sprints and managed CI/CD pipeline deployments."
+                ]
             }
         ],
         "projects": [
@@ -223,7 +262,7 @@ Respond ONLY with valid JSON with this exact schema:
       "hands_on_project": "Specific project to build and publish on GitHub"
     }}
   ],
-  "recommendations": "Comprehensive actionable advice, certification pathways, and interview tips."
+  "recommendations": "Structured advice starting with a 1-sentence personalized opening note, followed by numbered points: **1. Continuous Learning & Community Engagement:** ..., **2. Open Source Contributions:** ..., **3. Specialization:** ..., **4. Personal Brand & Portfolio:** ..., **5. Interview Preparation:** with sub-bullets for * **Coding Challenges:** ..., * **System Design:** ..., * **Technical Deep Dives:** ..., * **Behavioral Questions:** ..., **6. Certifications:** ..."
 }}
 Ensure there are between 8 and 12 distinct milestones covering foundational knowledge up to production architecture.
 """
@@ -354,9 +393,15 @@ def _fallback_roadmap(target_role: str, current_skills: List[str], experience_ye
         "missing_skills": missing,
         "milestones": milestones,
         "recommendations": (
-            f"To excel as a {target_role}, prioritize hands-on production code over passive video tutorials. "
-            f"Focus on bridging the gap in {', '.join(missing[:3])}. "
-            "Build real projects, publish clean repositories with automated tests, and articulate your architectural trade-offs."
+            f"As a candidate pursuing {target_role}, strategic focus and hands-on execution are key to standing out to top recruiters.\n\n"
+            f"**1. Target Skill Acquisition:** Prioritize mastering {', '.join(missing[:3]) if missing else 'advanced domain architectures'}. "
+            "Build production-grade applications that demonstrate architectural depth rather than basic tutorials.\n\n"
+            "**2. Open Source & Production Code:** Maintain active repositories with comprehensive READMEs, clear architecture diagrams, CI/CD pipelines, and automated test coverage.\n\n"
+            "**3. Interview Preparation:**\n"
+            "* **Coding Challenges:** Practice core data structures, algorithms, and complexity analysis on LeetCode.\n"
+            "* **System Design:** Prepare for scalable design discussions, state management, caching, and database trade-offs.\n"
+            "* **Behavioral Stories:** Structure project retrospectives using the STAR framework.\n\n"
+            "**4. Community & Brand:** Share technical walkthroughs on LinkedIn or a personal blog, and engage with open-source communities to expand your network."
         )
     }
 

@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
 
     # Database
-    DATABASE_URL: str = "postgresql://postgres@localhost:5433/talentsphere"
+    DATABASE_URL: str = "mysql+pymysql://root:Akhil%400109@localhost:3306/jobs_portal"
 
     # Security
     SECRET_KEY: str = "talentsphere-super-secure-production-secret-key-change-in-production"

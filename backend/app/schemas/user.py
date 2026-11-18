@@ -11,6 +11,12 @@ class UserBase(BaseModel):
     phone: Optional[str] = None
     location: Optional[str] = None
     profile_image: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+    preferred_locations: Optional[List[str]] = []
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    portfolio_url: Optional[str] = None
 
 
 class CandidateProfileUpdate(BaseModel):
@@ -18,6 +24,12 @@ class CandidateProfileUpdate(BaseModel):
     phone: Optional[str] = None
     location: Optional[str] = None
     profile_image: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+    preferred_locations: Optional[List[str]] = None
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    portfolio_url: Optional[str] = None
     skills: Optional[List[str]] = None
     experience_years: Optional[float] = None
     education: Optional[List[Any]] = None
@@ -32,6 +44,14 @@ class RecruiterProfileUpdate(BaseModel):
     company_name: Optional[str] = None
     company_website: Optional[str] = None
     company_description: Optional[str] = None
+    company_logo: Optional[str] = None
+    company_email: Optional[str] = None
+    industry: Optional[str] = None
+    company_linkedin_url: Optional[str] = None
+    company_type: Optional[str] = None
+    designation: Optional[str] = None
+    department: Optional[str] = None
+    linkedin_url: Optional[str] = None
 
 
 class UserResponse(UserBase):
@@ -39,6 +59,13 @@ class UserResponse(UserBase):
     company_name: Optional[str] = None
     company_website: Optional[str] = None
     company_description: Optional[str] = None
+    company_logo: Optional[str] = None
+    company_email: Optional[str] = None
+    industry: Optional[str] = None
+    company_linkedin_url: Optional[str] = None
+    company_type: Optional[str] = None
+    designation: Optional[str] = None
+    department: Optional[str] = None
     skills: List[str] = []
     experience_years: float = 0.0
     education: List[Any] = []

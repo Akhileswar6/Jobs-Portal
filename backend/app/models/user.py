@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Float, Text, DateTime, JSON
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Float, Text, DateTime, JSON, Uuid
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -9,7 +8,7 @@ from app.core.database import Base
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     name = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
@@ -22,6 +21,13 @@ class User(Base):
     company_name = Column(String(255), nullable=True)
     company_website = Column(String(500), nullable=True)
     company_description = Column(Text, nullable=True)
+    company_logo = Column(String(500), nullable=True)
+    company_email = Column(String(255), nullable=True)
+    industry = Column(String(100), nullable=True)
+    company_linkedin_url = Column(String(500), nullable=True)
+    company_type = Column(String(100), nullable=True)
+    designation = Column(String(150), nullable=True)
+    department = Column(String(150), nullable=True)
     
     # Candidate fields
     skills = Column(JSON, default=list, nullable=False)
@@ -29,6 +35,12 @@ class User(Base):
     education = Column(JSON, default=list, nullable=False)
     resume_path = Column(String(500), nullable=True)
     resume_parsed_data = Column(JSON, nullable=True)
+    date_of_birth = Column(String(50), nullable=True)
+    gender = Column(String(50), nullable=True)
+    preferred_locations = Column(JSON, default=list, nullable=True)
+    linkedin_url = Column(String(500), nullable=True)
+    github_url = Column(String(500), nullable=True)
+    portfolio_url = Column(String(500), nullable=True)
     
     # Timestamps
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)

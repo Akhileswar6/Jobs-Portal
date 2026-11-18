@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey, JSON
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Text, DateTime, ForeignKey, JSON, Uuid
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -9,8 +8,8 @@ from app.core.database import Base
 class CareerRoadmap(Base):
     __tablename__ = "career_roadmaps"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    candidate_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    candidate_id = Column(Uuid(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     target_role = Column(String(255), nullable=False)
     current_skills = Column(JSON, default=list, nullable=False)
     missing_skills = Column(JSON, default=list, nullable=False)

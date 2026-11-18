@@ -19,6 +19,7 @@ class ResumeExperienceItem(BaseModel):
     end_date: Optional[str] = None
     is_current: Optional[bool] = False
     description: Optional[str] = None
+    responsibilities: List[str] = []
 
 
 class ResumeProjectItem(BaseModel):
