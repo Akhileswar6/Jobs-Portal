@@ -19,23 +19,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('talentsphere_user');
+    const saved = localStorage.getItem('jobs_portal_user') || localStorage.getItem('talentsphere_user');
     return saved ? JSON.parse(saved) : null;
   });
   const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('talentsphere_access_token');
+    return localStorage.getItem('jobs_portal_access_token') || localStorage.getItem('talentsphere_access_token');
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const refreshUser = async () => {
-    if (!localStorage.getItem('talentsphere_access_token')) {
+    const activeToken = localStorage.getItem('jobs_portal_access_token') || localStorage.getItem('talentsphere_access_token');
+    if (!activeToken) {
       setIsLoading(false);
       return;
     }
     try {
       const me = await authApi.getMe();
       setUser(me);
-      localStorage.setItem('talentsphere_user', JSON.stringify(me));
+      localStorage.setItem('jobs_portal_user', JSON.stringify(me));
     } catch (err) {
       console.error('Failed to fetch user profile:', err);
       logout();
@@ -58,6 +59,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(accessToken);
       setUser(loggedUser);
 
+      localStorage.setItem('jobs_portal_access_token', accessToken);
+      localStorage.setItem('jobs_portal_user', JSON.stringify(loggedUser));
       localStorage.setItem('talentsphere_access_token', accessToken);
       localStorage.setItem('talentsphere_user', JSON.stringify(loggedUser));
 
@@ -82,10 +85,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(accessToken);
       setUser(newUser);
 
+      localStorage.setItem('jobs_portal_access_token', accessToken);
+      localStorage.setItem('jobs_portal_user', JSON.stringify(newUser));
       localStorage.setItem('talentsphere_access_token', accessToken);
       localStorage.setItem('talentsphere_user', JSON.stringify(newUser));
 
-      toast.success(`Account created! Welcome to TalentSphere, ${newUser.name}.`);
+      toast.success(`Account created! Welcome to Jobs Portal, ${newUser.name}.`);
       return newUser;
     } catch (err: any) {
       const msg = err.response?.data?.detail || 'Registration failed. Please check inputs.';
@@ -99,6 +104,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     setToken(null);
+    localStorage.removeItem('jobs_portal_access_token');
+    localStorage.removeItem('jobs_portal_user');
     localStorage.removeItem('talentsphere_access_token');
     localStorage.removeItem('talentsphere_user');
     toast.info('You have been logged out.');

@@ -12,7 +12,7 @@ export const apiClient = axios.create({
 // Request interceptor to attach JWT Bearer token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('talentsphere_access_token');
+    const token = localStorage.getItem('jobs_portal_access_token') || localStorage.getItem('talentsphere_access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -29,6 +29,8 @@ apiClient.interceptors.response.use(
       // Clear token if unauthorized and not on login page
       const currentPath = window.location.pathname;
       if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
+        localStorage.removeItem('jobs_portal_access_token');
+        localStorage.removeItem('jobs_portal_user');
         localStorage.removeItem('talentsphere_access_token');
         localStorage.removeItem('talentsphere_user');
       }
